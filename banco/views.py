@@ -1,15 +1,32 @@
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import status
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 from banco.models import *
 from banco.serializers import *
 
 class AgenciaView(APIView):
+    @swagger_auto_schema(
+        operation_description="Listar todas as agências",
+        responses={200: AgenciaSerializer(many=True)},
+        tags=['Agências']
+    )
     def get(self, request):
         agencias = Agencia.objects.all()
         serializer = AgenciaSerializer(agencias, many=True)
         return Response(serializer.data)
 
+    @swagger_auto_schema(
+        operation_description="Criar uma nova agência",
+        request_body=AgenciaSerializer,
+        responses={
+            201: AgenciaSerializer,
+            400: 'Dados inválidos'
+        },
+        tags=['Agências']
+    )
     def post(self, request):
         serializer = AgenciaSerializer(data=request.data)
         if serializer.is_valid():
@@ -24,6 +41,17 @@ class AgenciaDetailView(APIView):
         except Agencia.DoesNotExist:
             return None
 
+    @swagger_auto_schema(
+        operation_description="Obter detalhes de uma agência específica",
+        manual_parameters=[
+            openapi.Parameter('pk', openapi.IN_PATH, description="ID da agência", type=openapi.TYPE_INTEGER, required=True)
+        ],
+        responses={
+            200: AgenciaSerializer,
+            404: 'Agência não encontrada'
+        },
+        tags=['Agências']
+    )
     def get(self, request, pk):
         agencia = self.get_object(pk)
         if agencia is None:
@@ -31,6 +59,19 @@ class AgenciaDetailView(APIView):
         serializer = AgenciaSerializer(agencia)
         return Response(serializer.data)
 
+    @swagger_auto_schema(
+        operation_description="Atualizar uma agência específica",
+        manual_parameters=[
+            openapi.Parameter('pk', openapi.IN_PATH, description="ID da agência", type=openapi.TYPE_INTEGER, required=True)
+        ],
+        request_body=AgenciaSerializer,
+        responses={
+            200: AgenciaSerializer,
+            400: 'Dados inválidos',
+            404: 'Agência não encontrada'
+        },
+        tags=['Agências']
+    )
     def put(self, request, pk):
         agencia = self.get_object(pk)
         if agencia is None:
@@ -41,6 +82,17 @@ class AgenciaDetailView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
 
+    @swagger_auto_schema(
+        operation_description="Deletar uma agência específica",
+        manual_parameters=[
+            openapi.Parameter('pk', openapi.IN_PATH, description="ID da agência", type=openapi.TYPE_INTEGER, required=True)
+        ],
+        responses={
+            204: 'Agência deletada com sucesso',
+            404: 'Agência não encontrada'
+        },
+        tags=['Agências']
+    )
     def delete(self, request, pk):
         agencia = self.get_object(pk)
         if agencia is None:
@@ -49,11 +101,25 @@ class AgenciaDetailView(APIView):
         return Response(status=204)
 
 class ClienteView(APIView):
+    @swagger_auto_schema(
+        operation_description="Listar todos os clientes",
+        responses={200: ClienteSerializer(many=True)},
+        tags=['Clientes']
+    )
     def get(self, request):
         clientes = Cliente.objects.all()
         serializer = ClienteSerializer(clientes, many=True)
         return Response(serializer.data)
 
+    @swagger_auto_schema(
+        operation_description="Criar um novo cliente",
+        request_body=ClienteSerializer,
+        responses={
+            201: ClienteSerializer,
+            400: 'Dados inválidos'
+        },
+        tags=['Clientes']
+    )
     def post(self, request):
         serializer = ClienteSerializer(data=request.data)
         if serializer.is_valid():
@@ -69,6 +135,17 @@ class ClienteDetailView(APIView):
         except Cliente.DoesNotExist:
             return None
 
+    @swagger_auto_schema(
+        operation_description="Obter detalhes de um cliente específico",
+        manual_parameters=[
+            openapi.Parameter('pk', openapi.IN_PATH, description="ID do cliente", type=openapi.TYPE_INTEGER, required=True)
+        ],
+        responses={
+            200: ClienteSerializer,
+            404: 'Cliente não encontrado'
+        },
+        tags=['Clientes']
+    )
     def get(self, request, pk):
         cliente = self.get_object(pk)
         if cliente is None:
@@ -76,6 +153,19 @@ class ClienteDetailView(APIView):
         serializer = ClienteSerializer(cliente)
         return Response(serializer.data)
 
+    @swagger_auto_schema(
+        operation_description="Atualizar um cliente específico",
+        manual_parameters=[
+            openapi.Parameter('pk', openapi.IN_PATH, description="ID do cliente", type=openapi.TYPE_INTEGER, required=True)
+        ],
+        request_body=ClienteSerializer,
+        responses={
+            200: ClienteSerializer,
+            400: 'Dados inválidos',
+            404: 'Cliente não encontrado'
+        },
+        tags=['Clientes']
+    )
     def put(self, request, pk):
         cliente = self.get_object(pk)
         if cliente is None:
@@ -86,6 +176,17 @@ class ClienteDetailView(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
 
+    @swagger_auto_schema(
+        operation_description="Deletar um cliente específico",
+        manual_parameters=[
+            openapi.Parameter('pk', openapi.IN_PATH, description="ID do cliente", type=openapi.TYPE_INTEGER, required=True)
+        ],
+        responses={
+            204: 'Cliente deletado com sucesso',
+            404: 'Cliente não encontrado'
+        },
+        tags=['Clientes']
+    )
     def delete(self, request, pk):
         cliente = self.get_object(pk)
         if cliente is None:
